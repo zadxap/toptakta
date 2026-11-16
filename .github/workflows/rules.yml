@@ -1,0 +1,24 @@
+name: Deploy Firestore rules
+
+# Опционально: ручной деплой правил Firestore.
+# Секреты репозитория: FIREBASE_TOKEN (firebase login:ci),
+# FIREBASE_PROJECT_ID — id проекта Firebase.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Deploy rules
+        run: >
+          npx --yes firebase-tools@latest deploy --only firestore:rules
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          --token "${{ secrets.FIREBASE_TOKEN }}"
