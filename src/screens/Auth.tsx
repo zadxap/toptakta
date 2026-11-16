@@ -10,6 +10,7 @@ import { Sheet } from '../components/Sheet'
 /** человекочитаемый текст ошибки входа */
 function authErrText(err: string, t: ReturnType<typeof useLang>['t']): string {
   if (err.includes('unauthorized-domain')) return t('errAuthDomain')
+  if (err.includes('orphan-redirect-params')) return t('errAuthOrphan')
   return `${t('errAuthGeneric')}: ${err}`
 }
 
