@@ -11,6 +11,8 @@ export interface Store {
     onUser(cb: (u: AppUser | null) => void): () => void
     signIn(): Promise<void>
     signOut(): Promise<void>
+    /** код ошибки возврата redirect-входа, если была */
+    redirectError(): Promise<string | null>
   }
   groups: {
     listenMine(uid: string, cb: (groups: Group[]) => void): () => void

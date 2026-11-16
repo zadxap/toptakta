@@ -110,6 +110,9 @@ export const mockStore: Store = {
       persist(store())
       notify('user')
     },
+    async redirectError() {
+      return null
+    },
   },
 
   groups: {

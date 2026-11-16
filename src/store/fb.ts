@@ -17,6 +17,7 @@ import {
 import {
   GoogleAuthProvider,
   getAuth,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
   signInWithRedirect,
@@ -93,15 +94,32 @@ export const fbStore: Store = {
     },
     async signIn() {
       const provider = new GoogleAuthProvider()
-      try {
-        await signInWithPopup(auth(), provider)
-      } catch (err) {
-        const code = (err as { code?: string }).code ?? ''
-        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
-          await signInWithRedirect(auth(), provider)
-        } else if (code !== 'auth/cancelled-popup-request' && code !== 'auth/popup-closed-by-user') {
-          throw err
+      const host = location.hostname
+      const isLocal = host === 'localhost' || host === '127.0.0.1'
+
+      if (isLocal) {
+        // Локально попап удобнее — но при блокировке переходим на redirect
+        try {
+          await signInWithPopup(auth(), provider)
+          return
+        } catch (err) {
+          const code = (err as { code?: string }).code ?? ''
+          if (code === 'auth/cancelled-popup-request' || code === 'auth/popup-closed-by-user') return
+          if (code !== 'auth/popup-blocked' && code !== 'auth/operation-not-supported-in-this-environment') {
+            throw err
+          }
         }
+      }
+      // На хостинге redirect надёжнее: работает при блокировке попапов
+      // и сторонних кук (Edge tracking prevention, Vivaldi, iOS).
+      await signInWithRedirect(auth(), provider)
+    },
+    async redirectError() {
+      try {
+        await getRedirectResult(auth())
+        return null
+      } catch (err) {
+        return (err as { code?: string }).code ?? String(err)
       }
     },
     async signOut() {

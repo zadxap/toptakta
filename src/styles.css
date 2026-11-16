@@ -362,6 +362,11 @@ h3 {
   font-weight: 600;
 }
 
+.auth-err {
+  max-width: 34ch;
+  text-align: center;
+}
+
 .demo-chip.small {
   padding: 5px 9px;
   font-size: 11px;
